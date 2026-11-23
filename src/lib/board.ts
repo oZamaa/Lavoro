@@ -88,6 +88,34 @@ export function moveCard(
   return next;
 }
 
+/** Removes a card from whichever column holds it. */
+export function removeCard(state: CardsByColumn, cardId: number): CardsByColumn {
+  const columnId = findCardColumn(state, cardId);
+  if (columnId === undefined) return state;
+  return { ...state, [columnId]: (state[columnId] ?? []).filter((c) => c.id !== cardId) };
+}
+
+/**
+ * Inserts or updates a card after a save. New cards and cards that changed column go to the end
+ * of their column (as the server does); others keep their place.
+ */
+export function upsertCard(
+  state: CardsByColumn,
+  card: BoardCard & { columnId: number },
+): CardsByColumn {
+  const { columnId, ...data } = card;
+  if (!state[columnId]) return state;
+  const current = findCardColumn(state, card.id);
+  if (current === columnId) {
+    return {
+      ...state,
+      [columnId]: (state[columnId] ?? []).map((c) => (c.id === card.id ? data : c)),
+    };
+  }
+  const without = removeCard(state, card.id);
+  return { ...without, [columnId]: [...(without[columnId] ?? []), data] };
+}
+
 export function samePosition(a: CardPosition | undefined, b: CardPosition | undefined): boolean {
   return !!a && !!b && a.columnId === b.columnId && a.index === b.index;
 }

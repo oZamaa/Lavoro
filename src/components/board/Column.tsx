@@ -18,10 +18,12 @@ export function Column({
   column,
   cards,
   colorIndex,
+  onOpenCard,
 }: {
   column: BoardColumn;
   cards: BoardCard[];
   colorIndex: number;
+  onOpenCard: (id: number) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: columnDndId(column.id) });
   const dot = DOT_COLORS[colorIndex % DOT_COLORS.length];
@@ -44,7 +46,7 @@ export function Column({
       >
         <div ref={setNodeRef} className="flex min-h-24 flex-1 flex-col gap-3 overflow-y-auto p-1">
           {cards.map((card) => (
-            <SortableCard key={card.id} card={card} />
+            <SortableCard key={card.id} card={card} onOpen={() => onOpenCard(card.id)} />
           ))}
           {cards.length === 0 && (
             <p className="rounded-card border-border text-muted border border-dashed p-4 text-center text-sm">

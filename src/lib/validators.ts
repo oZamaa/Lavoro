@@ -48,8 +48,12 @@ const optionalRemote = z.preprocess(emptyToNull, z.enum(REMOTE_VALUES).nullable(
 const idSchema = z.number().int().positive();
 
 const applicationFields = {
-  company: z.string().trim().min(1, "Entreprise obligatoire").max(200),
-  title: z.string().trim().min(1, "Poste obligatoire").max(200),
+  company: z
+    .string({ error: "Entreprise obligatoire" })
+    .trim()
+    .min(1, "Entreprise obligatoire")
+    .max(200),
+  title: z.string({ error: "Poste obligatoire" }).trim().min(1, "Poste obligatoire").max(200),
   city: optionalText(120),
   url: optionalUrl,
   source: optionalText(120),
