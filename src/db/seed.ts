@@ -2,13 +2,14 @@ import { count } from "drizzle-orm";
 import type { AppDatabase } from "./client";
 import { columns } from "./schema";
 
+/** Deliberately accent-free (see migration 0001). */
 export const DEFAULT_COLUMNS = [
-  "À postuler",
-  "Déjà postulé",
+  "A postuler",
+  "Deja postule",
   "Entretien",
   "Offre",
-  "Refusé",
-  "Archivé",
+  "Refuse",
+  "Archive",
 ] as const;
 
 /** Inserts the default Kanban columns, only if the table is empty. */
