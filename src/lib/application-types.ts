@@ -40,7 +40,9 @@ export function toBoardCard(a: ApplicationDetail): BoardCard & { columnId: numbe
     title: a.title,
     city: a.city,
     contract: a.contract,
+    source: a.source,
     appliedAt: a.appliedAt,
+    followUpAt: a.followUpAt,
   };
 }
 

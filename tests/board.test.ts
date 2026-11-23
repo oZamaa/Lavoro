@@ -19,7 +19,9 @@ const card = (id: number, columnId: number): BoardCard & { columnId: number } =>
   title: "Dev",
   city: null,
   contract: null,
+  source: null,
   appliedAt: null,
+  followUpAt: null,
 });
 
 const columns = [

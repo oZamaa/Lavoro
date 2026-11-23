@@ -32,9 +32,20 @@ import {
 import { primaryButtonClass } from "@/components/ui/field-styles";
 import { toBoardCard, type ApplicationDetail } from "@/lib/application-types";
 import { removeCard, upsertCard } from "@/lib/board";
+import {
+  EMPTY_FILTERS,
+  applyFilters,
+  distinctValues,
+  isCustomView,
+  isFiltering,
+  type Filters as FiltersState,
+} from "@/lib/filters";
+import { isOverdue } from "@/lib/followup";
+import { useToday } from "@/lib/use-today";
 import { Card } from "./Card";
 import { CardDrawer, type DrawerTarget } from "./CardDrawer";
 import { Column } from "./Column";
+import { Filters } from "./Filters";
 
 type CardWithColumn = BoardCard & { columnId: number };
 
@@ -54,6 +65,8 @@ export function Board({
   const [activeCard, setActiveCard] = useState<BoardCard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drawer, setDrawer] = useState<DrawerTarget | null>(null);
+  const [filters, setFilters] = useState<FiltersState>(EMPTY_FILTERS);
+  const today = useToday();
   const snapshot = useRef<{ state: CardsByColumn; position: CardPosition } | null>(null);
   const queue = useRef<Promise<void>>(Promise.resolve());
 
@@ -172,6 +185,23 @@ export function Board({
     setActiveCard(null);
   }
 
+  // Derived view: filters/sort never touch `state` (the source of truth for positions).
+  const allCards = columns.flatMap((c) => state[c.id] ?? []);
+  const customView = isCustomView(filters);
+  const visible: CardsByColumn = customView
+    ? Object.fromEntries(columns.map((c) => [c.id, applyFilters(state[c.id] ?? [], filters)]))
+    : state;
+  const visibleCount = columns.reduce((n, c) => n + (visible[c.id] ?? []).length, 0);
+  const overdueIds = new Set(
+    columns.flatMap((c) =>
+      (state[c.id] ?? []).filter((x) => isOverdue(x.followUpAt, today, c.name)).map((x) => x.id),
+    ),
+  );
+  const plural = (n: number) => (n > 1 ? "s" : "");
+  const summary = isFiltering(filters)
+    ? `${visibleCount} résultat${plural(visibleCount)} sur ${allCards.length}`
+    : `${allCards.length} candidature${plural(allCards.length)}`;
+
   function handleSaved(row: ApplicationDetail) {
     setState((current) => upsertCard(current, toBoardCard(row)));
     setDrawer(null);
@@ -184,7 +214,11 @@ export function Board({
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <p aria-live="polite" className="text-muted text-sm">
+          {summary}
+          {overdueIds.size > 0 && ` · ${overdueIds.size} à relancer`}
+        </p>
         <button
           type="button"
           onClick={() => setDrawer({ mode: "create", columnId: columns[0]?.id ?? 0 })}
@@ -194,6 +228,15 @@ export function Board({
           + Nouvelle candidature
         </button>
       </div>
+      <Filters
+        filters={filters}
+        onChange={setFilters}
+        options={{
+          cities: distinctValues(allCards, "city"),
+          contracts: distinctValues(allCards, "contract"),
+          sources: distinctValues(allCards, "source"),
+        }}
+      />
       {drawer && (
         <CardDrawer
           key={drawer.mode === "edit" ? `edit-${drawer.id}` : "create"}
@@ -226,7 +269,10 @@ export function Board({
             <Column
               key={column.id}
               column={column}
-              cards={state[column.id] ?? []}
+              cards={visible[column.id] ?? []}
+              total={(state[column.id] ?? []).length}
+              overdueIds={overdueIds}
+              dragDisabled={customView}
               colorIndex={index}
               onOpenCard={(id) => setDrawer({ mode: "edit", id })}
             />

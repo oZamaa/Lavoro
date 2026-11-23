@@ -8,7 +8,9 @@ export type BoardCard = {
   title: string;
   city: string | null;
   contract: string | null;
+  source: string | null;
   appliedAt: string | null;
+  followUpAt: string | null;
 };
 
 /** Cards of each column, in display order. */
