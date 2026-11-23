@@ -29,7 +29,11 @@ import {
   type CardPosition,
   type CardsByColumn,
 } from "@/lib/board";
+import { primaryButtonClass } from "@/components/ui/field-styles";
+import { toBoardCard, type ApplicationDetail } from "@/lib/application-types";
+import { removeCard, upsertCard } from "@/lib/board";
 import { Card } from "./Card";
+import { CardDrawer, type DrawerTarget } from "./CardDrawer";
 import { Column } from "./Column";
 
 type CardWithColumn = BoardCard & { columnId: number };
@@ -49,6 +53,7 @@ export function Board({
   const [state, setState] = useState<CardsByColumn>(() => groupByColumn(columns, initialCards));
   const [activeCard, setActiveCard] = useState<BoardCard | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [drawer, setDrawer] = useState<DrawerTarget | null>(null);
   const snapshot = useRef<{ state: CardsByColumn; position: CardPosition } | null>(null);
   const queue = useRef<Promise<void>>(Promise.resolve());
 
@@ -167,12 +172,42 @@ export function Board({
     setActiveCard(null);
   }
 
+  function handleSaved(row: ApplicationDetail) {
+    setState((current) => upsertCard(current, toBoardCard(row)));
+    setDrawer(null);
+  }
+
+  function handleDeleted(id: number) {
+    setState((current) => removeCard(current, id));
+    setDrawer(null);
+  }
+
   return (
     <>
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setDrawer({ mode: "create", columnId: columns[0]?.id ?? 0 })}
+          disabled={columns.length === 0}
+          className={primaryButtonClass}
+        >
+          + Nouvelle candidature
+        </button>
+      </div>
+      {drawer && (
+        <CardDrawer
+          key={drawer.mode === "edit" ? `edit-${drawer.id}` : "create"}
+          target={drawer}
+          columns={columns}
+          onClose={() => setDrawer(null)}
+          onSaved={handleSaved}
+          onDeleted={handleDeleted}
+        />
+      )}
       {error && (
         <p
           role="alert"
-          className="rounded-button border-danger text-danger mb-3 border px-4 py-2 text-sm"
+          className="rounded-button border-danger text-danger-text mb-3 border px-4 py-2 text-sm"
         >
           {error}
         </p>
@@ -193,6 +228,7 @@ export function Board({
               column={column}
               cards={state[column.id] ?? []}
               colorIndex={index}
+              onOpenCard={(id) => setDrawer({ mode: "edit", id })}
             />
           ))}
         </div>

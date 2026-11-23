@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { cardDndId, type BoardCard } from "@/lib/board";
 import { Card } from "./Card";
 
-export function SortableCard({ card }: { card: BoardCard }) {
+export function SortableCard({ card, onOpen }: { card: BoardCard; onOpen: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: cardDndId(card.id),
   });
@@ -18,7 +18,7 @@ export function SortableCard({ card }: { card: BoardCard }) {
       {...attributes}
       {...listeners}
     >
-      <Card card={card} />
+      <Card card={card} onOpen={onOpen} />
     </div>
   );
 }

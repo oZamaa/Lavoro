@@ -11,14 +11,36 @@ function formatDate(iso: string): string {
 const pill = "rounded-full bg-accent/15 px-2 py-0.5 text-xs text-foreground";
 
 /** Presentational card (also used inside the drag overlay). */
-export function Card({ card, dragging = false }: { card: BoardCard; dragging?: boolean }) {
+export function Card({
+  card,
+  dragging = false,
+  onOpen,
+}: {
+  card: BoardCard;
+  dragging?: boolean;
+  onOpen?: () => void;
+}) {
   return (
     <article
+      onClick={onOpen}
       className={`rounded-card border-border bg-card shadow-card border p-4 ${
         dragging ? "ring-foreground/20 ring-2" : ""
-      }`}
+      } ${onOpen ? "cursor-pointer" : ""}`}
     >
-      <h3 className="leading-snug font-bold break-words">{card.company}</h3>
+      <h3 className="leading-snug font-bold break-words">
+        {onOpen ? (
+          // Keyboard entry point: Enter/Space on this button bubbles a click to the article.
+          <button
+            type="button"
+            aria-label={`Ouvrir la candidature ${card.company}`}
+            className="rounded-sm text-left"
+          >
+            {card.company}
+          </button>
+        ) : (
+          card.company
+        )}
+      </h3>
       <p className="text-muted text-sm break-words">{card.title}</p>
       {(card.city || card.contract) && (
         <div className="mt-3 flex flex-wrap gap-1.5">

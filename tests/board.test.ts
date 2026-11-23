@@ -5,7 +5,9 @@ import {
   moveCard,
   parseDndId,
   positionOf,
+  removeCard,
   resolveTarget,
+  upsertCard,
   samePosition,
   type BoardCard,
 } from "@/lib/board";
@@ -72,6 +74,27 @@ describe("board helpers", () => {
     expect(ids(moveCard(initial, 12, 3, 0), 3)).toEqual([12]);
     expect(moveCard(initial, 12, 99, 0)).toBe(initial);
     expect(moveCard(initial, 99, 1, 0)).toBe(initial);
+  });
+
+  it("removes a card", () => {
+    const next = removeCard(initial, 10);
+    expect(ids(next, 1)).toEqual([11]);
+    expect(removeCard(initial, 99)).toBe(initial);
+  });
+
+  it("upserts: appends new cards, updates in place, moves to the end on column change", () => {
+    const fresh = { ...card(20, 3) };
+    expect(ids(upsertCard(initial, fresh), 3)).toEqual([20]);
+
+    const renamed = upsertCard(initial, { ...card(10, 1), company: "Renommée" });
+    expect(ids(renamed, 1)).toEqual([10, 11]);
+    expect(renamed[1]?.[0]?.company).toBe("Renommée");
+
+    const moved = upsertCard(initial, card(10, 2));
+    expect(ids(moved, 1)).toEqual([11]);
+    expect(ids(moved, 2)).toEqual([12, 10]);
+
+    expect(upsertCard(initial, card(30, 99))).toBe(initial);
   });
 
   it("compares positions", () => {
