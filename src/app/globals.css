@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens — see docs/DESIGN.md */
+:root {
+  --background: #eef0f2;
+  --column: #e4e7ea;
+  --card: #ffffff;
+  --foreground: #111418;
+  --muted: #6b7280;
+  --border: #d9dde2;
+  --accent: #3ddba4;
+  --accent-foreground: #0b1f17;
+  --primary: #111418;
+  --primary-foreground: #ffffff;
+  --danger: #e5484d;
+  --shadow-card: 0 1px 2px rgb(17 20 24 / 0.06);
+}
+
+.dark {
+  --background: #0f1115;
+  --column: #171a20;
+  --card: #1f232b;
+  --foreground: #f2f4f7;
+  --muted: #9aa3af;
+  --border: #2a2f38;
+  --primary: #f2f4f7;
+  --primary-foreground: #111418;
+  --danger: #f26b70;
+  --shadow-card: none;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-column: var(--column);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-danger: var(--danger);
+
+  --radius-card: 14px;
+  --radius-column: 18px;
+  --radius-button: 10px;
+
+  --shadow-card: var(--shadow-card);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 2px;
+  }
+  *,
+  *::before,
+  *::after {
+    border-color: var(--border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
