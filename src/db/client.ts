@@ -7,6 +7,8 @@ import { seedDefaultColumns } from "./seed";
 import * as schema from "./schema";
 
 export type AppDatabase = BetterSQLite3Database<typeof schema>;
+/** Transaction handle passed to `db.transaction(...)` callbacks. */
+export type Tx = Parameters<Parameters<AppDatabase["transaction"]>[0]>[0];
 
 const MIGRATIONS_FOLDER = path.join(process.cwd(), "src", "db", "migrations");
 

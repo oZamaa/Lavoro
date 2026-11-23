@@ -8,6 +8,13 @@
       "when": 1795458741909,
       "tag": "0000_new_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795460967029,
+      "tag": "0001_rename_default_columns",
+      "breakpoints": true
     }
   ]
 }
