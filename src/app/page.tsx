@@ -17,7 +17,9 @@ export default function HomePage() {
     title: a.title,
     city: a.city,
     contract: a.contract,
+    source: a.source,
     appliedAt: a.appliedAt,
+    followUpAt: a.followUpAt,
   }));
 
   return (
@@ -25,8 +27,7 @@ export default function HomePage() {
       <div className="flex min-h-0 flex-1 flex-col">
         <h1 className="text-3xl font-semibold">Mes candidatures</h1>
         <p className="text-muted mt-1 mb-5 text-sm">
-          {cards.length} candidature{cards.length > 1 ? "s" : ""} · glisse une carte pour changer
-          son statut
+          Glisse une carte pour changer son statut, clique dessus pour la modifier.
         </p>
         <Board columns={columns} initialCards={cards} />
       </div>

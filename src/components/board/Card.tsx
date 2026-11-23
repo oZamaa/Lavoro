@@ -14,10 +14,12 @@ const pill = "rounded-full bg-accent/15 px-2 py-0.5 text-xs text-foreground";
 export function Card({
   card,
   dragging = false,
+  overdue = false,
   onOpen,
 }: {
   card: BoardCard;
   dragging?: boolean;
+  overdue?: boolean;
   onOpen?: () => void;
 }) {
   return (
@@ -42,14 +44,22 @@ export function Card({
         )}
       </h3>
       <p className="text-muted text-sm break-words">{card.title}</p>
-      {(card.city || card.contract) && (
+      {(card.city || card.contract || overdue) && (
         <div className="mt-3 flex flex-wrap gap-1.5">
+          {overdue && (
+            <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-medium">
+              À relancer
+            </span>
+          )}
           {card.city && <span className={pill}>{card.city}</span>}
           {card.contract && <span className={pill}>{card.contract}</span>}
         </div>
       )}
       {card.appliedAt && (
         <p className="text-muted mt-2 text-xs">Postulé le {formatDate(card.appliedAt)}</p>
+      )}
+      {card.followUpAt && (
+        <p className="text-muted text-xs">Relance le {formatDate(card.followUpAt)}</p>
       )}
     </article>
   );

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { SidebarNav } from "./SidebarNav";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -15,19 +15,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           </span>
           <span className="text-lg font-semibold">JobTrack</span>
         </div>
-        <nav aria-label="Navigation principale">
-          <Link
-            href="/"
-            aria-current="page"
-            className="rounded-button bg-accent/20 flex items-center px-3 py-2 font-medium"
-          >
-            Kanban
-          </Link>
-        </nav>
+        <SidebarNav orientation="vertical" />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col p-6 md:pl-0">
-        <div className="flex justify-end pb-2">
-          <ThemeToggle />
+        <div className="flex items-center justify-between pb-2">
+          <div className="md:hidden">
+            <SidebarNav orientation="horizontal" />
+          </div>
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
         </div>
         {children}
       </div>
