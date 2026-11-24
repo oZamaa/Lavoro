@@ -4,7 +4,8 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   closestCorners,
   useSensor,
   useSensors,
@@ -46,12 +47,13 @@ import { Card } from "./Card";
 import { CardDrawer, type DrawerTarget } from "./CardDrawer";
 import { Column } from "./Column";
 import { Filters } from "./Filters";
+import { TransferDialog } from "./TransferDialog";
 
 type CardWithColumn = BoardCard & { columnId: number };
 
 const instructions: ScreenReaderInstructions = {
   draggable:
-    "Pour déplacer cette candidature, appuyez sur Espace ou Entrée. Utilisez les flèches pour la déplacer, Espace ou Entrée pour la déposer, Échap pour annuler.",
+    "Pour déplacer cette candidature, appuyez sur Espace ou Entrée. Utilisez les flèches pour la déplacer, Espace ou Entrée pour la déposer, Échap pour annuler. Sur écran tactile, maintenez le doigt appuyé sur la carte.",
 };
 
 export function Board({
@@ -71,7 +73,9 @@ export function Board({
   const queue = useRef<Promise<void>>(Promise.resolve());
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    // Long-press on touch screens, so a swipe still scrolls the board.
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
@@ -214,19 +218,22 @@ export function Board({
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <p aria-live="polite" className="text-muted text-sm">
           {summary}
           {overdueIds.size > 0 && ` · ${overdueIds.size} à relancer`}
         </p>
-        <button
-          type="button"
-          onClick={() => setDrawer({ mode: "create", columnId: columns[0]?.id ?? 0 })}
-          disabled={columns.length === 0}
-          className={primaryButtonClass}
-        >
-          + Nouvelle candidature
-        </button>
+        <div className="flex items-center gap-3">
+          <TransferDialog />
+          <button
+            type="button"
+            onClick={() => setDrawer({ mode: "create", columnId: columns[0]?.id ?? 0 })}
+            disabled={columns.length === 0}
+            className={primaryButtonClass}
+          >
+            + Nouvelle candidature
+          </button>
+        </div>
       </div>
       <Filters
         filters={filters}
@@ -255,6 +262,32 @@ export function Board({
           {error}
         </p>
       )}
+      {allCards.length === 0 && (
+        <div className="rounded-card border-border bg-card mb-4 flex flex-col items-start gap-3 border p-6">
+          <h2 className="text-lg font-semibold">Aucune candidature pour l&apos;instant</h2>
+          <p className="text-muted text-sm">
+            Ajoute ta première candidature, ou restaure une sauvegarde avec le bouton « Sauvegarde
+            ».
+          </p>
+          <button
+            type="button"
+            onClick={() => setDrawer({ mode: "create", columnId: columns[0]?.id ?? 0 })}
+            disabled={columns.length === 0}
+            className={primaryButtonClass}
+          >
+            Ajouter ma première candidature
+          </button>
+        </div>
+      )}
+      {allCards.length > 0 && isFiltering(filters) && visibleCount === 0 && (
+        <p
+          role="status"
+          className="rounded-card border-border text-muted mb-4 border border-dashed p-4 text-sm"
+        >
+          Aucune candidature ne correspond à cette recherche. Modifie les filtres ou
+          réinitialise-les.
+        </p>
+      )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -265,7 +298,7 @@ export function Board({
         onDragCancel={handleDragCancel}
       >
         <div className="flex min-h-0 flex-1 gap-4 overflow-x-auto pb-2">
-          {columns.map((column, index) => (
+          {columns.map((column) => (
             <Column
               key={column.id}
               column={column}
@@ -273,7 +306,6 @@ export function Board({
               total={(state[column.id] ?? []).length}
               overdueIds={overdueIds}
               dragDisabled={customView}
-              colorIndex={index}
               onOpenCard={(id) => setDrawer({ mode: "edit", id })}
             />
           ))}

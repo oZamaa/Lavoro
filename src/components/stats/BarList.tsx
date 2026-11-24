@@ -7,9 +7,9 @@ export function BarList({ items }: { items: { label: string; count: number }[] }
       {items.map((item) => (
         <li key={item.label} className="grid grid-cols-[8rem_1fr_2rem] items-center gap-3 text-sm">
           <span className="truncate">{item.label}</span>
-          <span className="bg-column h-3 overflow-hidden rounded-full" aria-hidden="true">
+          <span className="bg-column h-1.5 overflow-hidden rounded-sm" aria-hidden="true">
             <span
-              className="bg-accent block h-full rounded-full"
+              className="bg-accent block h-full rounded-sm"
               style={{ width: `${(item.count / max) * 100}%` }}
             />
           </span>

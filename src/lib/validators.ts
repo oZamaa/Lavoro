@@ -94,6 +94,32 @@ export const updateColumnSchema = z
   .partial()
   .refine((v) => Object.keys(v).length > 0, "Aucun champ à modifier");
 
+const historyEntry = z.object({
+  from: z.string().nullable(),
+  to: z.string().nullable(),
+  changedAt: z.iso.datetime(),
+});
+
+/** One application in an import file (CSV row or JSON item). Extra keys are ignored. */
+export const importRowSchema = z.object({
+  ...applicationFields,
+  /** Existing column name (matched without accents/case); unknown names are refused. */
+  column: optionalText(60),
+  createdAt: z.preprocess(emptyToNull, z.iso.datetime().nullable().optional()),
+  updatedAt: z.preprocess(emptyToNull, z.iso.datetime().nullable().optional()),
+  history: z.array(historyEntry).max(500).optional(),
+});
+
+export const importRequestSchema = z.strictObject({
+  format: z.enum(["csv", "json"]),
+  mode: z.enum(["append", "replace"]),
+  content: z.string().min(1, "Fichier vide").max(5_000_000, "Fichier trop volumineux (5 Mo max)"),
+});
+
+export const exportQuerySchema = z.object({ format: z.enum(["csv", "json"]).default("json") });
+
+export type ImportRow = z.infer<typeof importRowSchema>;
+export type ImportRequest = z.infer<typeof importRequestSchema>;
 export type CreateApplicationInput = z.infer<typeof createApplicationSchema>;
 export type UpdateApplicationInput = z.infer<typeof updateApplicationSchema>;
 export type MoveApplicationInput = z.infer<typeof moveApplicationSchema>;

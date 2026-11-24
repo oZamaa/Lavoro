@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getDb } from "@/db/client";
 import { AppShell } from "@/components/layout/AppShell";
 import { BarList } from "@/components/stats/BarList";
@@ -31,8 +32,18 @@ export default function StatsPage() {
   return (
     <AppShell>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <h1 className="text-3xl font-semibold">Statistiques</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Statistiques</h1>
         <p className="text-muted mt-1 mb-6 text-sm">Un aperçu de ta recherche en cours.</p>
+
+        {stats.total === 0 && (
+          <p className="rounded-card border-border text-muted mb-4 border border-dashed p-4 text-sm">
+            Pas encore de données.{" "}
+            <Link href="/" className="text-foreground font-medium underline">
+              Ajoute une candidature
+            </Link>{" "}
+            pour voir apparaître les statistiques.
+          </p>
+        )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <StatCard label="Candidatures" value={stats.total} />
@@ -46,19 +57,19 @@ export default function StatsPage() {
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <section className="rounded-card border-border bg-card shadow-card border p-5">
-            <h2 className="mb-4 text-lg font-semibold">Par statut</h2>
+          <section className="rounded-card border-border bg-card border p-4">
+            <h2 className="mb-4 text-base font-semibold">Par statut</h2>
             <BarList items={stats.byColumn.map((c) => ({ label: c.name, count: c.count }))} />
           </section>
 
-          <section className="rounded-card border-border bg-card shadow-card border p-5">
-            <h2 className="mb-4 text-lg font-semibold">Candidatures par semaine</h2>
+          <section className="rounded-card border-border bg-card border p-4">
+            <h2 className="mb-4 text-base font-semibold">Candidatures par semaine</h2>
             <WeekChart weeks={stats.perWeek} />
           </section>
         </div>
 
-        <section className="rounded-card border-border bg-card shadow-card mt-4 border p-5">
-          <h2 className="mb-4 text-lg font-semibold">Prochaines relances</h2>
+        <section className="rounded-card border-border bg-card mt-4 border p-4">
+          <h2 className="mb-4 text-base font-semibold">Prochaines relances</h2>
           {stats.upcoming.length === 0 ? (
             <p className="text-muted text-sm">Aucune relance planifiée.</p>
           ) : (
