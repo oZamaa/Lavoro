@@ -8,15 +8,18 @@
   --column: #e4e7ea;
   --card: #ffffff;
   --foreground: #111418;
-  --muted: #6b7280;
-  --border: #d9dde2;
+  --muted: #5b6270;
+  --border: #e0e4e8; /* hairline separators */
+  --input-border: #767e8b; /* form controls: 3:1 against any surface */
+  --scrollbar-thumb: #b8bec7;
+  --scrollbar-thumb-hover: #8f97a3;
   --accent: #3ddba4;
   --accent-foreground: #0b1f17;
   --primary: #111418;
   --primary-foreground: #ffffff;
   --danger: #e5484d;
   --danger-text: #c62a2f;
-  --shadow-card: 0 1px 2px rgb(17 20 24 / 0.06);
+  --shadow-card: none;
 }
 
 .dark {
@@ -25,7 +28,10 @@
   --card: #1f232b;
   --foreground: #f2f4f7;
   --muted: #9aa3af;
-  --border: #2a2f38;
+  --border: #262b33;
+  --input-border: #6b7480;
+  --scrollbar-thumb: #3d444f;
+  --scrollbar-thumb-hover: #566070;
   --primary: #f2f4f7;
   --primary-foreground: #111418;
   --danger: #f26b70;
@@ -40,6 +46,7 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-input: var(--input-border);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-primary: var(--primary);
@@ -47,9 +54,9 @@
   --color-danger: var(--danger);
   --color-danger-text: var(--danger-text);
 
-  --radius-card: 14px;
-  --radius-column: 18px;
-  --radius-button: 10px;
+  --radius-card: 8px;
+  --radius-column: 10px;
+  --radius-button: 6px;
 
   --shadow-card: var(--shadow-card);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -67,6 +74,30 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+  /* Slim, themed scrollbars (Firefox + Chromium/Safari) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border: 3px solid transparent;
+    border-radius: 9999px;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+  *::-webkit-scrollbar-corner {
+    background: transparent;
   }
   :focus-visible {
     outline: 2px solid var(--foreground);

@@ -25,7 +25,7 @@ export default function HomePage() {
   return (
     <AppShell>
       <div className="flex min-h-0 flex-1 flex-col">
-        <h1 className="text-3xl font-semibold">Mes candidatures</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Mes candidatures</h1>
         <p className="text-muted mt-1 mb-5 text-sm">
           Glisse une carte pour changer son statut, clique dessus pour la modifier.
         </p>

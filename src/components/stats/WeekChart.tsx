@@ -24,7 +24,7 @@ export function WeekChart({ weeks }: { weeks: { weekStart: string; count: number
             {w.count}
           </span>
           <span
-            className="bg-accent w-full rounded-t-md"
+            className="bg-accent w-full max-w-6 rounded-t-sm"
             style={{
               height: `${Math.max(4, (w.count / max) * 100)}%`,
               opacity: w.count ? 1 : 0.35,

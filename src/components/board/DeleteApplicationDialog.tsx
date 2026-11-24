@@ -25,7 +25,7 @@ export function DeleteApplicationDialog({
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 z-[60] bg-black/50" />
-        <AlertDialog.Content className="rounded-card border-border bg-card text-foreground shadow-card fixed top-1/2 left-1/2 z-[60] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 border p-6">
+        <AlertDialog.Content className="rounded-card border-border bg-card text-foreground fixed top-1/2 left-1/2 z-[60] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 border p-6">
           <AlertDialog.Title className="text-lg font-semibold">
             Supprimer cette candidature ?
           </AlertDialog.Title>
